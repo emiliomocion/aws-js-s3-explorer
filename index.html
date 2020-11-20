@@ -36,7 +36,7 @@ permissions and limitations under the License.
 <body>
 
     <!-- Modal Settings dialog -->
-    <div id="SettingsModal" class="modal fade" ng-controller="SettingsController" tabindex="-1">
+    <div id="SettingsModal" class="modal" ng-controller="SettingsController" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form name="settings_form" ng-submit="update()">
@@ -46,7 +46,7 @@ permissions and limitations under the License.
                             <h4 class="modal-title">S3 Explorer: Settings</h4>
                         </div>
                         <div class="modal-body">
-                            <div class="col-md-18">
+                            <div class="col-md-18 hidden">
                                 <div class="panel panel-default">
                                     <div class="panel-body">
                                         <p><b>Bucket</b>: Please indicate which region and S3 bucket you want to explore.</p>

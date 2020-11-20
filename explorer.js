@@ -49,6 +49,14 @@ const DEBUG = (() => {
     };
 })();
 
+// Get parameter for url 
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+    results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
 // Utility to convert bytes to readable text e.g. "2 KB" or "5 MB"
 function bytesToSize(bytes) {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -140,6 +148,7 @@ function stripLeadTrailSlash(s) {
 //
 function SharedService($rootScope) {
     DEBUG.log('SharedService init');
+    
 
     const shared = {
         settings: null, viewprefix: null, skew: true,
@@ -476,9 +485,9 @@ function ViewController($scope, SharedService) {
         if (prefix) {
             prefixes.push(...prefix.replace(/\/$/g, '').split('/'));
         }
-
+        console.log(prefixes);
         // Add bucket followed by prefix segments to make breadcrumbs
-        for (let ii = 0; ii < prefixes.length; ii++) {
+        for (let ii = 1; ii < prefixes.length; ii++) {
             let li;
 
             // Bucket
@@ -500,8 +509,9 @@ function ViewController($scope, SharedService) {
             }
 
             // Save prefix & bucket data for later click handler
-            li.children('a').attr('data-prefix', buildprefix).attr('data-bucket', bucket);
-
+            console.log('buildprefix', buildprefix);
+            // li.children('a').attr('data-prefix', buildprefix).attr('data-bucket', bucket);
+            li.children('a').attr('data-prefix', buildprefix);
             // Add to breadcrumbs
             $bc.append(li);
         }
@@ -920,24 +930,32 @@ function SettingsController($scope, SharedService) {
     DEBUG.log('SettingsController init');
     window.settingsScope = $scope; // for debugging
 
+    const constprefix = getParameterByName('prefix');
+    let prefix = constprefix ? `${constprefix}/` : ''; 
+
     // Initialized for an unauthenticated user exploring the current bucket
     // TODO: calculate current bucket and initialize below
     $scope.settings = {
-        auth: 'anon', region: '', bucket: '', entered_bucket: '', selected_bucket: '', view: 'folder', delimiter: '/', prefix: '',
+        auth: 'auth', region: 'sa-east-1', bucket: '', entered_bucket: 'caracolinternacional', selected_bucket: 'caracolinternacional', view: 'folder', delimiter: '/', prefix: prefix
     };
+
+    
+
     $scope.settings.mfa = { use: 'no', code: '' };
-    $scope.settings.cred = { accessKeyId: '', secretAccessKey: '', sessionToken: '' };
+    $scope.settings.cred = { accessKeyId: 'AKIAZGOVCK4S4H46ZL6H', secretAccessKey: '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', sessionToken: '' };
+    
     $scope.settings.stscred = null;
+
+    $scope.settings.bucket = ($scope.settings.selected_bucket || $scope.settings.entered_bucket) && prefix !== '' ? $scope.settings.entered_bucket : '';
 
     // TODO: at present the Settings dialog closes after credentials have been supplied
     // even if the subsequent AWS calls fail with networking or permissions errors. It
-    // would be better for the Settings dialog to synchronously make the necessary API
-    // calls and ensure they succeed before closing the modal dialog.
+    // would be better f or the Settings dialog to synchronously make the necessary API
+    // // calls and ensure they succeed before closing the modal dialog.
     $scope.update = () => {
         DEBUG.log('Settings updated');
-        $('#SettingsModal').modal('hide');
-        $scope.settings.bucket = $scope.settings.selected_bucket || $scope.settings.entered_bucket;
-
+        console.log('SettingsModal: ',$('#SettingsModal').modal('hide'));
+        console.log('update');
         // If manually entered bucket then add it to list of buckets for future
         if ($scope.settings.entered_bucket) {
             if (!$scope.settings.buckets) {
@@ -956,6 +974,8 @@ function SettingsController($scope, SharedService) {
 
         SharedService.changeSettings($scope.settings);
     };
+    $scope.update();
+    
 }
 
 //
