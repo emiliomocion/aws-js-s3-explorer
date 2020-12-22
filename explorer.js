@@ -942,7 +942,7 @@ function SettingsController($scope, SharedService) {
     
 
     $scope.settings.mfa = { use: 'no', code: '' };
-    $scope.settings.cred = { accessKeyId: 'AKIAZGOVCK4S4EZFZOKE', secretAccessKey: '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', sessionToken: '' };
+    $scope.settings.cred = { accessKeyId: 'AKIA35CE6OHDUCV43TBP', secretAccessKey: '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', sessionToken: '' };
     
     $scope.settings.stscred = null;
 
